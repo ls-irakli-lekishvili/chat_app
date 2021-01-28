@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
 
         perfomRegister()
 
-        val alreadyHaveAccountBtn = findViewById<Button>(R.id.alreadyHaveAccountBtn).setOnClickListener {
+        val alreadyHaveAccountBtn = findViewById<Button>(R.id.already_have_account_text_view).setOnClickListener {
             Log.d("main", "try to show login activity")
 
             val intent = Intent(this, LoginActivity::class.java)
@@ -25,9 +25,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun perfomRegister() {
-        val registerBtn = findViewById<Button>(R.id.registerbtn).setOnClickListener {
-            val email = findViewById<EditText>(R.id.email_edittext_register).text.toString()
-            val password = findViewById<EditText>(R.id.password_edittext_register).text.toString()
+        val registerBtn = findViewById<Button>(R.id.register_button_register).setOnClickListener {
+            val email = findViewById<EditText>(R.id.email_editText_registration).text.toString()
+            val password = findViewById<EditText>(R.id.password_editText_registration).text.toString()
 
             if(email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please enter text in email/pw", Toast.LENGTH_LONG).show()
@@ -46,10 +46,6 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Failure register", Toast.LENGTH_LONG).show()
                 }
         }
-
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener()
-            .add
 
     }
 
