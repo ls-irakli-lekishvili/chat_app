@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 
@@ -14,9 +15,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        perfomRegister()
+        performRegister()
 
-        val alreadyHaveAccountBtn = findViewById<Button>(R.id.already_have_account_text_view).setOnClickListener {
+        val alreadyHaveAccountBtn = findViewById<TextView>(R.id.already_have_account_text_view).setOnClickListener {
             Log.d("main", "try to show login activity")
 
             val intent = Intent(this, LoginActivity::class.java)
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun perfomRegister() {
+    private fun performRegister() {
         val registerBtn = findViewById<Button>(R.id.register_button_register).setOnClickListener {
             val email = findViewById<EditText>(R.id.email_editText_registration).text.toString()
             val password = findViewById<EditText>(R.id.password_editText_registration).text.toString()
