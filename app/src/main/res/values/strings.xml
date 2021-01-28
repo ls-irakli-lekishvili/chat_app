@@ -6,4 +6,6 @@
     <string name="register">Register</string>
     <string name="have_account">Already have an account?</string>
     <string name="login">LOGIN</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="new_message">New Message</string>
 </resources>
