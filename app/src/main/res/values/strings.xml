@@ -10,4 +10,8 @@
     <string name="new_message">New Message</string>
     <string name="select_photo">Select Photo</string>
     <string name="full_name">Full Name</string>
+    <string name="enter_message">Enter Message</string>
+    <string name="send">SEND</string>
+    <string name="sent_message">sent message</string>
+    <string name="received_message">received message</string>
 </resources>

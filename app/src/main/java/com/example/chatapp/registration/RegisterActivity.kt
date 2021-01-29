@@ -1,4 +1,4 @@
-package com.example.chatapp
+package com.example.chatapp.registration
 
 import android.app.Activity
 import android.content.Intent
@@ -11,6 +11,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import com.example.chatapp.R
+import com.example.chatapp.messages.LatestMessageActivity
+import com.example.chatapp.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage

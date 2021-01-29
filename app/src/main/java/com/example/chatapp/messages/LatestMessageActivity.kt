@@ -1,10 +1,12 @@
-package com.example.chatapp
+package com.example.chatapp.messages
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.example.chatapp.R
+import com.example.chatapp.registration.RegisterActivity
 import com.google.firebase.auth.FirebaseAuth
 
 class LatestMessageActivity: AppCompatActivity() {

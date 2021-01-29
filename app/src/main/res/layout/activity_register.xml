@@ -9,7 +9,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/teal_200"
-    tools:context=".RegisterActivity" >
+    tools:context=".registration.RegisterActivity" >
 
     <Button
         android:id="@+id/selectphoto_button_register"

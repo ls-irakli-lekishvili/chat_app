@@ -1,10 +1,13 @@
-package com.example.chatapp
+package com.example.chatapp.messages
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.chatapp.R
+import com.example.chatapp.models.User
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -23,6 +26,10 @@ class NewMessageActivity : AppCompatActivity() {
         fetchUsers()
     }
 
+    companion object {
+        val USER_KEY = "USER_KEY"
+    }
+
     private fun fetchUsers() {
         val ref = FirebaseDatabase.getInstance().getReference("/users")
         ref.addListenerForSingleValueEvent(object: ValueEventListener {
@@ -37,6 +44,14 @@ class NewMessageActivity : AppCompatActivity() {
                         adapter.add(UserItem(it))
                     }
                 }
+
+                adapter.setOnItemClickListener { item, view ->
+                    val userItem = item as UserItem
+                    val intent = Intent(view.context, ChatLogActivity::class.java)
+                    intent.putExtra(USER_KEY, userItem.user.username)
+                    startActivity(intent)
+                    finish()
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -45,7 +60,7 @@ class NewMessageActivity : AppCompatActivity() {
         })
     }
 
-    class UserItem(private val user: User): Item<ViewHolder>() {
+    class UserItem(val user: User): Item<ViewHolder>() {
         override fun bind(viewHolder: ViewHolder, position: Int) {
             viewHolder.itemView.findViewById<TextView>(R.id.username_text_view_new_message).text = user.username
             val imageContainer: ImageView = viewHolder.itemView.findViewById(R.id.image_view_new_message)

@@ -1,4 +1,4 @@
-package com.example.chatapp
+package com.example.chatapp.registration
 
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +7,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.chatapp.R
 import com.google.firebase.auth.FirebaseAuth
 import java.util.*
 
