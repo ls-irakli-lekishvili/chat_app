@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatapp.R
 import com.example.chatapp.messages.NewMessageActivity.Companion.USER_KEY
+import com.example.chatapp.models.User
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
@@ -15,8 +16,8 @@ class ChatLogActivity: AppCompatActivity() {
         setContentView(R.layout.activity_chat_log)
 
 
-        val username = intent.getStringExtra(USER_KEY)
-        supportActionBar?.title = username
+        val user = intent.getParcelableExtra<User>(USER_KEY) as User
+        supportActionBar?.title = user.username
 
 
         val adapter = GroupAdapter<ViewHolder>()
