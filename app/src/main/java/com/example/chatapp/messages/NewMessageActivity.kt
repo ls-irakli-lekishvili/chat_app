@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatapp.R
 import com.example.chatapp.models.User
+import com.example.chatapp.views.UserItem
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -26,10 +28,6 @@ class NewMessageActivity : AppCompatActivity() {
         fetchUsers()
     }
 
-    companion object {
-        val USER_KEY = "USER_KEY"
-    }
-
     private fun fetchUsers() {
         val ref = FirebaseDatabase.getInstance().getReference("/users")
         ref.addListenerForSingleValueEvent(object: ValueEventListener {
@@ -38,10 +36,12 @@ class NewMessageActivity : AppCompatActivity() {
                 val adapter = GroupAdapter<ViewHolder>()
                 recyclerView.adapter = adapter
 
+                val authedUserUid = FirebaseAuth.getInstance().uid
                 snapshot.children.forEach { entity ->
                     val user = entity.getValue(User::class.java)
                     user?.let {
-                        adapter.add(UserItem(it))
+                        if (it.uid != authedUserUid)
+                            adapter.add(UserItem(it))
                     }
                 }
 
@@ -60,17 +60,7 @@ class NewMessageActivity : AppCompatActivity() {
         })
     }
 
-    class UserItem(val user: User): Item<ViewHolder>() {
-        override fun bind(viewHolder: ViewHolder, position: Int) {
-            viewHolder.itemView.findViewById<TextView>(R.id.username_text_view_new_message).text = user.username
-            val imageContainer: ImageView = viewHolder.itemView.findViewById(R.id.image_view_new_message)
-            Picasso.get().load(user.profileImageUrl).into(imageContainer)
-        }
-        override fun getLayout(): Int {
-            return R.layout.user_row_new_message
-        }
-
+    companion object {
+        val USER_KEY = "USER_KEY"
     }
-
-
 }

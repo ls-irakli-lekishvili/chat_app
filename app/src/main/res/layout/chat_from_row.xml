@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imageview_chat_from"
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:background="@drawable/rounded_edittext_register_login"
+        android:textColor="@color/black"
         android:maxWidth="240dp"
         android:padding="16dp"
         android:text="@string/received_message"

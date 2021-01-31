@@ -2,9 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
 
     <EditText
@@ -16,8 +16,10 @@
         android:layout_marginBottom="8dp"
         android:autofillHints="@string/enter_message"
         android:background="@color/white"
+        android:textColor="@color/black"
         android:ems="10"
         android:hint="@string/enter_message"
+        android:textColorHint="@color/gray"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/send_button_chat_log"
