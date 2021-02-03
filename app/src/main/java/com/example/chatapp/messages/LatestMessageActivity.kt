@@ -6,25 +6,32 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
+import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatapp.R
+import com.example.chatapp.application.RetrofitInstance
 import com.example.chatapp.messages.NewMessageActivity.Companion.USER_KEY
 import com.example.chatapp.models.ChatMessage
+import com.example.chatapp.models.NotificationData
+import com.example.chatapp.models.PushNotification
 import com.example.chatapp.models.User
 import com.example.chatapp.registration.RegisterActivity
 import com.example.chatapp.views.LatestMessageRow
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.squareup.picasso.Picasso
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.gson.Gson
 import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.latest_message_row.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.lang.Exception
+
+const val topic = "/topics/myTopic"
 
 class LatestMessageActivity: AppCompatActivity() {
 
@@ -33,6 +40,9 @@ class LatestMessageActivity: AppCompatActivity() {
     lateinit var noMessageImage: TextView
     lateinit var noMessageText: TextView
     lateinit var recyclerView: RecyclerView
+
+    //test
+    lateinit var button: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_latest_message)
@@ -47,6 +57,23 @@ class LatestMessageActivity: AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerview_latest_messages)
         noMessageImage = findViewById(R.id.no_messages_icon_latest_activity)
         noMessageText = findViewById(R.id.no_message_text_latest_activity)
+
+        button = findViewById(R.id.testing_will_delete_later)
+        FirebaseMessaging.getInstance().subscribeToTopic(topic)
+
+        button.setOnClickListener {
+            val title = "test"
+            val message = "working"
+            val topic = topic
+            if (title.isNotEmpty() && message.isNotEmpty()) {
+                PushNotification(
+                    NotificationData(title, message),
+                    topic
+                ).also {
+                    sendNotification(it)
+                }
+            }
+        }
 
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
@@ -144,6 +171,22 @@ class LatestMessageActivity: AppCompatActivity() {
         menuInflater.inflate(R.menu.nav_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
+
+    // notification
+
+    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitInstance.api.postNotification(notification)
+            if(response.isSuccessful) {
+                Log.d("LatestMessageActivity", Gson().toJson(response))
+            } else {
+                Log.d("LatestMessageActivity", response.errorBody().toString())
+            }
+        } catch (e: Exception) {
+            Log.e("LatestMessageActivity", e.toString())
+        }
+    }
+
 
 
     companion object {

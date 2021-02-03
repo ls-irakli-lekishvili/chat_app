@@ -7,13 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.view.View
 import android.widget.*
 import com.example.chatapp.R
 import com.example.chatapp.extensions.validEmail
 import com.example.chatapp.messages.LatestMessageActivity
 import com.example.chatapp.models.User
-import com.example.chatapp.views.ProgressBarDialog
+import com.example.chatapp.dialogs.ProgressBarDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage

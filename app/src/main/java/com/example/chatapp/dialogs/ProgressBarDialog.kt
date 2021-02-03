@@ -1,4 +1,4 @@
-package com.example.chatapp.views
+package com.example.chatapp.dialogs
 
 import android.app.Dialog
 import android.content.Context
