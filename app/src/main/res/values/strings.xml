@@ -16,4 +16,6 @@
     <string name="received_message">received message</string>
     <string name="back_to_registration">Back to registration</string>
     <string name="latest_message">Latest Message</string>
+    <string name="no_new_messages">no new messages</string>
+    <string name="no_recent_messages">No Recent Messages</string>
 </resources>

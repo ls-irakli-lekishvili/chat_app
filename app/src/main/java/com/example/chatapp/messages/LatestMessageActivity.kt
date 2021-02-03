@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatapp.R
@@ -28,10 +30,24 @@ class LatestMessageActivity: AppCompatActivity() {
 
     val latestMessagesMap = HashMap<String, ChatMessage>()
     val adapter = GroupAdapter<ViewHolder>()
+    lateinit var noMessageImage: TextView
+    lateinit var noMessageText: TextView
+    lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_latest_message)
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerview_latest_messages)
+        setUpView()
+        listenForLatestMessages()
+        fetchCurrentUser()
+        verifyUserIsLoggedIn()
+        super.onCreate(savedInstanceState)
+    }
+
+    private fun setUpView() {
+        recyclerView = findViewById(R.id.recyclerview_latest_messages)
+        noMessageImage = findViewById(R.id.no_messages_icon_latest_activity)
+        noMessageText = findViewById(R.id.no_message_text_latest_activity)
+
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         adapter.setOnItemClickListener { item, view ->
@@ -40,11 +56,6 @@ class LatestMessageActivity: AppCompatActivity() {
             intent.putExtra(USER_KEY, row.chatPartnerUser)
             startActivity(intent)
         }
-
-        listenForLatestMessages()
-        fetchCurrentUser()
-        verifyUserIsLoggedIn()
-        super.onCreate(savedInstanceState)
     }
 
 
@@ -56,6 +67,8 @@ class LatestMessageActivity: AppCompatActivity() {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 val chatMessage = snapshot.getValue(ChatMessage::class.java) ?: return
                 latestMessagesMap[snapshot.key!!] = chatMessage
+                noMessageImage.visibility = View.GONE
+                noMessageText.visibility = View.GONE
                 refreshRecyclerViewMessages()
             }
 
