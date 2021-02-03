@@ -22,6 +22,7 @@ import com.xwray.groupie.ViewHolder
 class ChatLogActivity: AppCompatActivity() {
     val adapter = GroupAdapter<ViewHolder>()
     var toUser: User? = null
+    lateinit var recyclerView: RecyclerView
     var text: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +30,7 @@ class ChatLogActivity: AppCompatActivity() {
         setContentView(R.layout.activity_chat_log)
 
         val sendButton: Button = findViewById(R.id.send_button_chat_log)
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerview_chat_log)
+        recyclerView = findViewById(R.id.recyclerview_chat_log)
         recyclerView.adapter = adapter
 
         val user = intent.getParcelableExtra<User>(USER_KEY) as User
@@ -66,6 +67,7 @@ class ChatLogActivity: AppCompatActivity() {
                         adapter.add(ChatFromItem(chatMessage.text, toUser!!))
                     }
                 }
+                recyclerView.scrollToPosition(adapter.itemCount - 1)
 
             }
 

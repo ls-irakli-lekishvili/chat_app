@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.chatapp.R
+import com.example.chatapp.extensions.validEmail
 import com.google.firebase.auth.FirebaseAuth
 import java.util.*
 
@@ -30,8 +31,7 @@ class LoginActivity: AppCompatActivity() {
         val email = findViewById<EditText>(R.id.email_editText_login).text.toString()
         val password = findViewById<EditText>(R.id.password_editText_login).text.toString()
 
-        if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please fill out email/pw.", Toast.LENGTH_SHORT).show()
+        if (!validateEmailAndPassword(email, password)) {
             return
         }
 
@@ -44,5 +44,18 @@ class LoginActivity: AppCompatActivity() {
                 .addOnFailureListener {
                     Toast.makeText(this, "Failed to log in: ${it.message}", Toast.LENGTH_SHORT).show()
                 }
+    }
+
+    private fun validateEmailAndPassword(email: String, password: String): Boolean {
+        if(!validEmail(email)) {
+            Toast.makeText(this, "Wrong Email Format", Toast.LENGTH_LONG).show()
+            return false
+        }
+
+        if(password.length <= 5) {
+            Toast.makeText(this, "Wrong Password Format", Toast.LENGTH_LONG).show()
+            return false
+        }
+        return true
     }
 }

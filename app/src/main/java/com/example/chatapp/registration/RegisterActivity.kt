@@ -7,13 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import com.example.chatapp.R
+import com.example.chatapp.extensions.validEmail
 import com.example.chatapp.messages.LatestMessageActivity
 import com.example.chatapp.models.User
+import com.example.chatapp.views.ProgressBarDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -22,23 +22,21 @@ import java.util.*
 
 class RegisterActivity : AppCompatActivity() {
     var selectedPhotoUri: Uri? = null
+    lateinit var myProgressBar: ProgressBarDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
+        myProgressBar = ProgressBarDialog(this)
 
         performRegister()
 
         findViewById<TextView>(R.id.already_have_account_text_view).setOnClickListener {
-            Log.d("main", "try to show login activity")
-
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
 
         findViewById<Button>(R.id.selectphoto_button_register).setOnClickListener {
-            Log.d("Main", "Try to show photo selector")
-
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
             startActivityForResult(intent, 0)
@@ -49,9 +47,6 @@ class RegisterActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == 0 && resultCode == Activity.RESULT_OK && data != null) {
-            // proceed and check what the selected image was....
-            Log.d("register", "Photo was selected")
-
             selectedPhotoUri = data.data
 
             val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, selectedPhotoUri)
@@ -62,33 +57,56 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun performRegister() {
-            findViewById<Button>(R.id.register_button_register).setOnClickListener {
+        findViewById<Button>(R.id.register_button_register).setOnClickListener {
+            val username =
+                findViewById<EditText>(R.id.username_editText_registration).text.toString()
             val email = findViewById<EditText>(R.id.email_editText_registration).text.toString()
-            val password = findViewById<EditText>(R.id.password_editText_registration).text.toString()
+            val password =
+                findViewById<EditText>(R.id.password_editText_registration).text.toString()
 
-                if (email.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(this, "Please enter text in email/pw", Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
+            if (!validateLogin(username, email, password)) {
+                return@setOnClickListener
+            }
+
+            myProgressBar.show()
+
+            // Firebase Authentication to create a user with email and password
+            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener {
+                    if (!it.isSuccessful) return@addOnCompleteListener
+                    uploadImageToFirebaseStorage()
                 }
+                .addOnFailureListener {
+                    Log.d("register", "Failed to create user: ${it.message}")
+                    Toast.makeText(this, "Failed to create user: ${it.message}", Toast.LENGTH_SHORT)
+                        .show()
+                    myProgressBar.dismiss()
 
-                Log.d("register", "Attempting to create user with email: $email")
-
-                // Firebase Authentication to create a user with email and password
-                FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener {
-                        if (!it.isSuccessful) return@addOnCompleteListener
-
-                        // else if successful
-                        Log.d("register", "Successfully created user with uid: ${it.result?.user?.uid}")
-
-                        uploadImageToFirebaseStorage()
-                    }
-                    .addOnFailureListener{
-                        Log.d("register", "Failed to create user: ${it.message}")
-                        Toast.makeText(this, "Failed to create user: ${it.message}", Toast.LENGTH_SHORT).show()
-                    }
+                }
         }
 
+    }
+
+    private fun validateLogin(username: String, email: String, password: String): Boolean {
+        if (username.isBlank()) {
+            Toast.makeText(this, "Username Shouldn't Be Blank", Toast.LENGTH_LONG).show()
+            return false
+        }
+        if (!validEmail(email)) {
+            Toast.makeText(this, "Email Should Be Valid", Toast.LENGTH_LONG).show()
+            return false
+        }
+        if (password.length <= 5) {
+            Toast.makeText(this, "Password Should Be More Than 6 Characters", Toast.LENGTH_LONG)
+                .show()
+            return false
+        }
+
+        if (selectedPhotoUri == null) {
+            Toast.makeText(this, "Please Select Profile Image", Toast.LENGTH_LONG).show()
+            return false
+        }
+        return true
     }
 
     private fun uploadImageToFirebaseStorage() {
@@ -98,8 +116,8 @@ class RegisterActivity : AppCompatActivity() {
         val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
 
         ref.putFile(selectedPhotoUri!!)
-            .addOnSuccessListener {
-                Log.d("register", "Successfully uploaded image: ${it.metadata?.path}")
+            .addOnSuccessListener { message ->
+                Log.d("register", "Successfully uploaded image: ${message.metadata?.path}")
 
                 ref.downloadUrl.addOnSuccessListener {
                     Log.d("register", "File Location: $it")
@@ -109,6 +127,7 @@ class RegisterActivity : AppCompatActivity() {
             }
             .addOnFailureListener {
                 Log.d("register", "Failed to upload image to storage: ${it.message}")
+                myProgressBar.dismiss()
             }
     }
 
