@@ -4,35 +4,25 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.getSystemService
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatapp.R
-import com.example.chatapp.application.RetrofitInstance
 import com.example.chatapp.messages.NewMessageActivity.Companion.USER_KEY
 import com.example.chatapp.models.ChatMessage
-import com.example.chatapp.models.NotificationData
-import com.example.chatapp.models.PushNotification
 import com.example.chatapp.models.User
 import com.example.chatapp.registration.RegisterActivity
 import com.example.chatapp.views.LatestMessageRow
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.gson.Gson
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.lang.Exception
+
 
 class LatestMessageActivity: AppCompatActivity() {
     lateinit var subscribedTopic: String
@@ -44,10 +34,11 @@ class LatestMessageActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_latest_message)
-        setUpView()
-        listenForLatestMessages()
-        fetchCurrentUser()
-        verifyUserIsLoggedIn()
+        if(verifyUserIsLoggedIn()) {
+            setUpView()
+            listenForLatestMessages()
+            fetchCurrentUser()
+        }
         super.onCreate(savedInstanceState)
     }
 
@@ -128,13 +119,15 @@ class LatestMessageActivity: AppCompatActivity() {
         })
     }
 
-    private fun verifyUserIsLoggedIn() {
+    private fun verifyUserIsLoggedIn(): Boolean {
         val uid = FirebaseAuth.getInstance().uid
         if (uid == null) {
             val intent = Intent(this, RegisterActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
+            return false
         }
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
