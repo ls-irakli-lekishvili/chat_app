@@ -11,7 +11,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context=".registration.RegisterActivity"
-    android:layout_marginBottom="16dp">
+    android:paddingBottom="16dp">
 
     <Button
         android:id="@+id/selectphoto_button_register"

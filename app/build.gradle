@@ -61,4 +61,5 @@ dependencies {
 
     implementation 'com.xwray:groupie:2.1.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'petrov.kristiyan:colorpicker-library:1.1.10'
 }

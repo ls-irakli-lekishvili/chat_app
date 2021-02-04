@@ -18,4 +18,8 @@
     <string name="latest_message">Latest Message</string>
     <string name="no_new_messages">no new messages</string>
     <string name="no_recent_messages">No Recent Messages</string>
+    <string name="turn_off_on_notifications">Turn off/on notifications</string>
+    <string name="notification_image">notification image</string>
+    <string name="change_color">change color</string>
+    <string name="change_chat_color">Change chat color</string>
 </resources>

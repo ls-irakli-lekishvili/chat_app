@@ -42,6 +42,11 @@ class FirebaseService : FirebaseMessagingService() {
         notificationManager.notify(notificationID, notification)
     }
 
+    // there wont be new token cause I use user uid that is constant
+    override fun onNewToken(p0: String) {
+        super.onNewToken(p0)
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel(notificationManager: NotificationManager) {
         val channelName = "channelName"

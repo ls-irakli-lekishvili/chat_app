@@ -1,6 +1,7 @@
 package com.example.chatapp.messages
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatapp.R
 import com.example.chatapp.application.RetrofitInstance
+import com.example.chatapp.messages.LatestMessageActivity.Companion.currentUsersName
 import com.example.chatapp.messages.LatestMessageActivity.Companion.headerStart
 import com.example.chatapp.messages.NewMessageActivity.Companion.USER_KEY
 import com.example.chatapp.models.ChatMessage
@@ -32,29 +34,35 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-//const val topic = "/topics/myTopic"
 
 class ChatLogActivity : AppCompatActivity() {
     val adapter = GroupAdapter<ViewHolder>()
     var toUser: User? = null
     lateinit var recyclerView: RecyclerView
     lateinit var text: String
+    lateinit var sendButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_log)
+        setup()
+        // useris setingebidan feris wamogeba da gadawodeba
+        setChatColor(Color.GREEN)
+        listenForMessages()
 
-        val sendButton: Button = findViewById(R.id.send_button_chat_log)
+    }
+
+    private fun setup() {
+        sendButton = findViewById(R.id.send_button_chat_log)
         recyclerView = findViewById(R.id.recyclerview_chat_log)
         recyclerView.adapter = adapter
         toUser = intent.getParcelableExtra(USER_KEY)
-
-
-
         supportActionBar?.title = toUser?.username
 
-        listenForMessages()
+        addListener()
+    }
 
+    private fun addListener() {
         sendButton.setOnClickListener {
             text = findViewById<EditText>(R.id.edittext_chat_log).text.toString().trim()
             if (text.isNotBlank()) {
@@ -64,11 +72,14 @@ class ChatLogActivity : AppCompatActivity() {
         }
     }
 
+    private fun setChatColor(color: Int) {
+        recyclerView.setBackgroundColor(color)
+    }
+
     private fun setupNotification() {
-        val title = "new message from"
+        val title = "new message from $currentUsersName"
         val message = text
         val topic = "${headerStart}${toUser?.uid}"
-//        val topic = FirebaseAuth.getInstance().uid!!
         if (title.isNotEmpty() && message.isNotEmpty()) {
             PushNotification(
                 NotificationData(title, message),

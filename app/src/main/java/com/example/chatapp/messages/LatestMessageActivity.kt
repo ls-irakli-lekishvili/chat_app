@@ -25,7 +25,6 @@ import com.xwray.groupie.ViewHolder
 
 
 class LatestMessageActivity: AppCompatActivity() {
-    lateinit var subscribedTopic: String
     val latestMessagesMap = HashMap<String, ChatMessage>()
     val adapter = GroupAdapter<ViewHolder>()
     lateinit var noMessageImage: TextView
@@ -49,9 +48,10 @@ class LatestMessageActivity: AppCompatActivity() {
 
         subscribedTopic = "${headerStart}${FirebaseAuth.getInstance().uid!!}"
 
-        FirebaseMessaging.getInstance().subscribeToTopic(subscribedTopic)
-
-
+        // subscribes to topic for notification
+        if(/*if notification is on from db*/ true) {
+            FirebaseMessaging.getInstance().subscribeToTopic(subscribedTopic)
+        }
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         adapter.setOnItemClickListener { item, view ->
@@ -61,8 +61,6 @@ class LatestMessageActivity: AppCompatActivity() {
             startActivity(intent)
         }
     }
-
-
 
     private fun listenForLatestMessages() {
         val fromId = FirebaseAuth.getInstance().uid
@@ -82,15 +80,10 @@ class LatestMessageActivity: AppCompatActivity() {
                 latestMessagesMap[snapshot.key!!] = chatMessage
                 refreshRecyclerViewMessages()
             }
-
-
             override fun onCancelled(error: DatabaseError) {
             }
-
             override fun onChildRemoved(snapshot: DataSnapshot) {
-
             }
-
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
             }
         })
@@ -111,6 +104,9 @@ class LatestMessageActivity: AppCompatActivity() {
 
             override fun onDataChange(snapshot: DataSnapshot) {
                 currentUser = snapshot.getValue(User::class.java)
+                currentUser?.let {
+                    currentUsersName = it.username
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -163,6 +159,8 @@ class LatestMessageActivity: AppCompatActivity() {
     companion object {
         const val headerStart = "/topics/"
         var currentUser: User? = null
+        lateinit var subscribedTopic: String
+        lateinit var currentUsersName: String
     }
 
 }
