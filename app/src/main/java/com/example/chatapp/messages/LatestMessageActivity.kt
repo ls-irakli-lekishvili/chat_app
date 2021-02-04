@@ -1,5 +1,7 @@
 package com.example.chatapp.messages
 
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +11,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.getSystemService
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatapp.R
@@ -31,18 +34,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-const val topic = "/topics/myTopic"
-
 class LatestMessageActivity: AppCompatActivity() {
-
+    lateinit var subscribedTopic: String
     val latestMessagesMap = HashMap<String, ChatMessage>()
     val adapter = GroupAdapter<ViewHolder>()
     lateinit var noMessageImage: TextView
     lateinit var noMessageText: TextView
     lateinit var recyclerView: RecyclerView
-
-    //test
-    lateinit var button: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_latest_message)
@@ -58,22 +56,10 @@ class LatestMessageActivity: AppCompatActivity() {
         noMessageImage = findViewById(R.id.no_messages_icon_latest_activity)
         noMessageText = findViewById(R.id.no_message_text_latest_activity)
 
-        button = findViewById(R.id.testing_will_delete_later)
-        FirebaseMessaging.getInstance().subscribeToTopic(topic)
+        subscribedTopic = "${headerStart}${FirebaseAuth.getInstance().uid!!}"
 
-        button.setOnClickListener {
-            val title = "test"
-            val message = "working"
-            val topic = topic
-            if (title.isNotEmpty() && message.isNotEmpty()) {
-                PushNotification(
-                    NotificationData(title, message),
-                    topic
-                ).also {
-                    sendNotification(it)
-                }
-            }
-        }
+        FirebaseMessaging.getInstance().subscribeToTopic(subscribedTopic)
+
 
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
@@ -91,6 +77,7 @@ class LatestMessageActivity: AppCompatActivity() {
         val fromId = FirebaseAuth.getInstance().uid
         val ref = FirebaseDatabase.getInstance().getReference("/latest-messages/$fromId")
         ref.addChildEventListener(object: ChildEventListener {
+
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 val chatMessage = snapshot.getValue(ChatMessage::class.java) ?: return
                 latestMessagesMap[snapshot.key!!] = chatMessage
@@ -159,6 +146,7 @@ class LatestMessageActivity: AppCompatActivity() {
 
             R.id.menu_sign_out -> {
                 FirebaseAuth.getInstance().signOut()
+                clearNotificationsAndUnsub()
                 val intent = Intent(this, RegisterActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
@@ -172,24 +160,15 @@ class LatestMessageActivity: AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    // notification
-
-    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
-        try {
-            val response = RetrofitInstance.api.postNotification(notification)
-            if(response.isSuccessful) {
-                Log.d("LatestMessageActivity", Gson().toJson(response))
-            } else {
-                Log.d("LatestMessageActivity", response.errorBody().toString())
-            }
-        } catch (e: Exception) {
-            Log.e("LatestMessageActivity", e.toString())
-        }
+    private fun clearNotificationsAndUnsub() {
+        val notificationManager: NotificationManager = applicationContext.getSystemService(
+            Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancelAll()
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(subscribedTopic)
     }
 
-
-
     companion object {
+        const val headerStart = "/topics/"
         var currentUser: User? = null
     }
 

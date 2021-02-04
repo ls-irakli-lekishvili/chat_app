@@ -11,12 +11,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatapp.R
 import com.example.chatapp.application.RetrofitInstance
+import com.example.chatapp.messages.LatestMessageActivity.Companion.headerStart
 import com.example.chatapp.messages.NewMessageActivity.Companion.USER_KEY
 import com.example.chatapp.models.ChatMessage
 import com.example.chatapp.models.NotificationData
 import com.example.chatapp.models.PushNotification
 import com.example.chatapp.models.User
-import com.example.chatapp.registration.RegisterActivity
 import com.example.chatapp.views.ChatFromItem
 import com.example.chatapp.views.ChatToItem
 import com.google.firebase.auth.FirebaseAuth
@@ -24,7 +24,6 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -50,7 +49,6 @@ class ChatLogActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
         toUser = intent.getParcelableExtra(USER_KEY)
 
-//        FirebaseMessaging.getInstance().subscribeToTopic(FirebaseAuth.getInstance().uid!!)
 
 
         supportActionBar?.title = toUser?.username
@@ -60,17 +58,16 @@ class ChatLogActivity : AppCompatActivity() {
         sendButton.setOnClickListener {
             text = findViewById<EditText>(R.id.edittext_chat_log).text.toString().trim()
             if (text.isNotBlank()) {
-                performSendMessage()
                 setupNotification()
+                performSendMessage()
             }
         }
     }
 
     private fun setupNotification() {
-        val user = FirebaseAuth.getInstance().currentUser
         val title = "new message from"
         val message = text
-//        val topic = toUser?.uid
+        val topic = "${headerStart}${toUser?.uid}"
 //        val topic = FirebaseAuth.getInstance().uid!!
         if (title.isNotEmpty() && message.isNotEmpty()) {
             PushNotification(
