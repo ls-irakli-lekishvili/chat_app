@@ -3,6 +3,7 @@ package com.example.chatapp.messages
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -22,6 +23,7 @@ import com.google.firebase.database.*
 import com.google.firebase.messaging.FirebaseMessaging
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
+import kotlin.properties.Delegates
 
 
 class LatestMessageActivity: AppCompatActivity() {
@@ -47,11 +49,6 @@ class LatestMessageActivity: AppCompatActivity() {
         noMessageText = findViewById(R.id.no_message_text_latest_activity)
 
         subscribedTopic = "${headerStart}${FirebaseAuth.getInstance().uid!!}"
-
-        // subscribes to topic for notification
-        if(/*if notification is on from db*/ true) {
-            FirebaseMessaging.getInstance().subscribeToTopic(subscribedTopic)
-        }
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         adapter.setOnItemClickListener { item, view ->
@@ -59,6 +56,12 @@ class LatestMessageActivity: AppCompatActivity() {
             val row = item as LatestMessageRow
             intent.putExtra(USER_KEY, row.chatPartnerUser)
             startActivity(intent)
+        }
+    }
+
+    private fun subscribeToTopicIfEnabled(isNotificationEnabled: Boolean) {
+        if(isNotificationEnabled) {
+            FirebaseMessaging.getInstance().subscribeToTopic(subscribedTopic)
         }
     }
 
@@ -106,6 +109,9 @@ class LatestMessageActivity: AppCompatActivity() {
                 currentUser = snapshot.getValue(User::class.java)
                 currentUser?.let {
                     currentUsersName = it.username
+                    subscribeToTopicIfEnabled(it.notification)
+                    chatColor = it.color
+
                 }
             }
 
@@ -161,6 +167,7 @@ class LatestMessageActivity: AppCompatActivity() {
         var currentUser: User? = null
         lateinit var subscribedTopic: String
         lateinit var currentUsersName: String
+        var chatColor = Color.RED
     }
 
 }

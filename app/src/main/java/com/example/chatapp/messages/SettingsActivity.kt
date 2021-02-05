@@ -6,7 +6,11 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.chatapp.R
+import com.example.chatapp.messages.LatestMessageActivity.Companion.chatColor
+import com.example.chatapp.messages.LatestMessageActivity.Companion.currentUser
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.messaging.FirebaseMessaging
 import petrov.kristiyan.colorpicker.ColorPicker
 import petrov.kristiyan.colorpicker.ColorPicker.OnFastChooseColorListener
@@ -14,18 +18,22 @@ import petrov.kristiyan.colorpicker.ColorPicker.OnFastChooseColorListener
 
 lateinit var switch: SwitchMaterial
 lateinit var changeColor: View
+lateinit var ref: DatabaseReference
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
-        supportActionBar?.title = "Settings"
         setUp()
     }
 
     private fun setUp() {
+        supportActionBar?.title = "Settings"
+
         switch = findViewById(R.id.notification_switch_activity_settings)
         changeColor = findViewById(R.id.div_container_change_color_settings)
+
+        ref = FirebaseDatabase.getInstance().reference
         addEvent()
     }
 
@@ -39,6 +47,7 @@ class SettingsActivity : AppCompatActivity() {
                 FirebaseMessaging.getInstance()
                     .unsubscribeFromTopic(LatestMessageActivity.subscribedTopic)
             }
+            updateNotificationStatus(isChecked)
         }
 
         changeColor.setOnClickListener {
@@ -55,10 +64,8 @@ class SettingsActivity : AppCompatActivity() {
         colorPicker.setRoundColorButton(true)
         colorPicker.setOnFastChooseColorListener(object : OnFastChooseColorListener {
             override fun setOnFastChooseColorListener(position: Int, color: Int) {
-                // bazashi feris atana
-
-
-                // returns to ChatLogActivity
+                chatColor = color
+                updateChatColorToDB(color)
                 finish()
             }
 
@@ -67,6 +74,14 @@ class SettingsActivity : AppCompatActivity() {
         })
             .setColumns(5)
             .show()
+    }
+
+    private fun updateNotificationStatus(isNotificationActive: Boolean) {
+        ref.child("/users/${currentUser?.uid}").child("notification").setValue(isNotificationActive)
+    }
+
+    private fun updateChatColorToDB(color: Int) {
+        ref.child("/users/${currentUser?.uid}").child("color").setValue(color)
     }
 
     override fun onBackPressed() {

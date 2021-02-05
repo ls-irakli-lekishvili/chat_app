@@ -1,12 +1,10 @@
 package com.example.chatapp.messages
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -14,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatapp.R
 import com.example.chatapp.application.RetrofitInstance
+import com.example.chatapp.messages.LatestMessageActivity.Companion.chatColor
 import com.example.chatapp.messages.LatestMessageActivity.Companion.currentUsersName
 import com.example.chatapp.messages.LatestMessageActivity.Companion.headerStart
 import com.example.chatapp.messages.NewMessageActivity.Companion.USER_KEY
@@ -48,9 +47,13 @@ class ChatLogActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_log)
         setup()
-        // useris setingebidan feris wamogeba da gadawodeba
-        setChatColor(Color.GREEN)
+        setChatColor(chatColor)
         listenForMessages()
+    }
+
+    override fun onResume() {
+        setChatColor(chatColor)
+        super.onResume()
     }
 
     private fun setup() {

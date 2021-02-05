@@ -2,6 +2,7 @@ package com.example.chatapp.auth
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -135,7 +136,7 @@ class RegisterActivity : AppCompatActivity() {
 
         val username = findViewById<EditText>(R.id.username_editText_registration).text.toString()
 
-        val user = User(uid, username, profileImageUrl)
+        val user = User(uid, username, profileImageUrl, true, Color.GREEN)
 
         ref.setValue(user)
             .addOnSuccessListener {
