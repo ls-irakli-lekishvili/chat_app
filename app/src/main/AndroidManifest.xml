@@ -31,10 +31,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".registration.LoginActivity"
+            android:name=".auth.LoginActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".registration.RegisterActivity"
+            android:name=".auth.RegisterActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".messages.NewMessageActivity">
             <meta-data

@@ -15,7 +15,7 @@ import com.example.chatapp.R
 import com.example.chatapp.messages.NewMessageActivity.Companion.USER_KEY
 import com.example.chatapp.models.ChatMessage
 import com.example.chatapp.models.User
-import com.example.chatapp.registration.RegisterActivity
+import com.example.chatapp.auth.RegisterActivity
 import com.example.chatapp.views.LatestMessageRow
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*

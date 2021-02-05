@@ -1,4 +1,4 @@
-package com.example.chatapp.registration
+package com.example.chatapp.auth
 
 import android.app.Activity
 import android.content.Intent
@@ -13,6 +13,8 @@ import com.example.chatapp.extensions.validEmail
 import com.example.chatapp.messages.LatestMessageActivity
 import com.example.chatapp.models.User
 import com.example.chatapp.dialogs.ProgressBarDialog
+import com.example.chatapp.dto.SignUpDto
+import com.example.chatapp.view_model.AuthViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -20,6 +22,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
 
 class RegisterActivity : AppCompatActivity() {
+    private val authViewModel: AuthViewModel = AuthViewModel()
     var selectedPhotoUri: Uri? = null
     lateinit var myProgressBar: ProgressBarDialog
 
@@ -57,11 +60,9 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun performRegister() {
         findViewById<Button>(R.id.register_button_register).setOnClickListener {
-            val username =
-                findViewById<EditText>(R.id.username_editText_registration).text.toString()
+            val username = findViewById<EditText>(R.id.username_editText_registration).text.toString()
             val email = findViewById<EditText>(R.id.email_editText_registration).text.toString()
-            val password =
-                findViewById<EditText>(R.id.password_editText_registration).text.toString()
+            val password = findViewById<EditText>(R.id.password_editText_registration).text.toString()
 
             if (!validateLogin(username, email, password)) {
                 return@setOnClickListener
@@ -69,21 +70,19 @@ class RegisterActivity : AppCompatActivity() {
 
             myProgressBar.show()
 
-            // Firebase Authentication to create a user with email and password
-            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener {
-                    if (!it.isSuccessful) return@addOnCompleteListener
-                    uploadImageToFirebaseStorage()
+            authViewModel.signUp(SignUpDto(email, password))
+            authViewModel.signUpLiveData.observe(
+                this,
+                {
+                    if(it.success) {
+                        uploadImageToFirebaseStorage()
+                    } else {
+                        Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
+                        myProgressBar.dismiss()
+                    }
                 }
-                .addOnFailureListener {
-                    Log.d("register", "Failed to create user: ${it.message}")
-                    Toast.makeText(this, "Failed to create user: ${it.message}", Toast.LENGTH_SHORT)
-                        .show()
-                    myProgressBar.dismiss()
-
-                }
+            )
         }
-
     }
 
     private fun validateLogin(username: String, email: String, password: String): Boolean {
