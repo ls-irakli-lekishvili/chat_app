@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.chatapp.R
@@ -32,13 +34,13 @@ import com.xwray.groupie.ViewHolder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 
 class ChatLogActivity : AppCompatActivity() {
     val adapter = GroupAdapter<ViewHolder>()
     var toUser: User? = null
     lateinit var recyclerView: RecyclerView
+    lateinit var textView: TextView
     lateinit var text: String
     lateinit var sendButton: Button
 
@@ -49,22 +51,23 @@ class ChatLogActivity : AppCompatActivity() {
         // useris setingebidan feris wamogeba da gadawodeba
         setChatColor(Color.GREEN)
         listenForMessages()
-
     }
 
     private fun setup() {
+        supportActionBar?.title = toUser?.username
+        toUser = intent.getParcelableExtra(USER_KEY)
+
         sendButton = findViewById(R.id.send_button_chat_log)
         recyclerView = findViewById(R.id.recyclerview_chat_log)
-        recyclerView.adapter = adapter
-        toUser = intent.getParcelableExtra(USER_KEY)
-        supportActionBar?.title = toUser?.username
+        textView = findViewById<EditText>(R.id.edittext_chat_log)
 
+        recyclerView.adapter = adapter
         addListener()
     }
 
     private fun addListener() {
         sendButton.setOnClickListener {
-            text = findViewById<EditText>(R.id.edittext_chat_log).text.toString().trim()
+            text = textView.text.toString().trim()
             if (text.isNotBlank()) {
                 setupNotification()
                 performSendMessage()
