@@ -111,6 +111,7 @@ class LatestMessageActivity: AppCompatActivity() {
                     currentUsersName = it.username
                     subscribeToTopicIfEnabled(it.notification)
                     chatColor = it.color
+                    notificationState = it.notification
 
                 }
             }
@@ -168,6 +169,7 @@ class LatestMessageActivity: AppCompatActivity() {
         lateinit var subscribedTopic: String
         lateinit var currentUsersName: String
         var chatColor = Color.RED
+        var notificationState = true
     }
 
 }

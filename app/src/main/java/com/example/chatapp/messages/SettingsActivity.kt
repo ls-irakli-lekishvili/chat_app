@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.chatapp.R
 import com.example.chatapp.messages.LatestMessageActivity.Companion.chatColor
 import com.example.chatapp.messages.LatestMessageActivity.Companion.currentUser
+import com.example.chatapp.messages.LatestMessageActivity.Companion.notificationState
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -32,6 +33,7 @@ class SettingsActivity : AppCompatActivity() {
 
         switch = findViewById(R.id.notification_switch_activity_settings)
         changeColor = findViewById(R.id.div_container_change_color_settings)
+        switch.isChecked = notificationState
 
         ref = FirebaseDatabase.getInstance().reference
         addEvent()
@@ -47,6 +49,7 @@ class SettingsActivity : AppCompatActivity() {
                 FirebaseMessaging.getInstance()
                     .unsubscribeFromTopic(LatestMessageActivity.subscribedTopic)
             }
+            notificationState = isChecked
             updateNotificationStatus(isChecked)
         }
 
